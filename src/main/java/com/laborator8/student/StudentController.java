@@ -1,9 +1,8 @@
 package com.laborator8.student;
 
+import com.laborator8.exception.ResourceNotFoundException;
 import com.laborator8.utils.StudentDTO;
 import org.springframework.web.bind.annotation.*;
-
-import com.laborator8.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ public class StudentController {
 
     @GetMapping
     public List<Student> getAll() {
-
         return studentService.getAll();
     }
 
@@ -38,9 +36,8 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public StudentDTO editStudent(@PathVariable int id, @RequestBody StudentDTO student) {
-        Student editedStudent = studentService.editStudent(id, new Student(student.getId(), student.getName()));
-        return new StudentDTO(editedStudent.getId(), editedStudent.getName());
+    public Student editStudent(@PathVariable int id, @RequestBody Student student) {
+        return studentService.editStudent(id, student);
     }
 
     @DeleteMapping("/{id}")
