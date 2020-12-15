@@ -5,6 +5,7 @@ import com.laborator8.utils.StudentDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/students")
@@ -16,8 +17,11 @@ public class StudentController {
     }
 
     @GetMapping
-    public List<Student> getAll() {
-        return studentService.getAll();
+    public List<StudentDTO> getAll() {
+        List<Student> students = studentService.getAll();
+        return students.stream()
+                .map((Student student) -> new StudentDTO(student.getId(), student.getName()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
@@ -36,8 +40,9 @@ public class StudentController {
     }
 
     @PutMapping("/{id}")
-    public Student editStudent(@PathVariable int id, @RequestBody Student student) {
-        return studentService.editStudent(id, student);
+    public StudentDTO editStudent(@PathVariable int id, @RequestBody Student student) {
+        Student studentEdited = studentService.editStudent(id, new Student(id, student.getName(), student.getAge()));
+        return new StudentDTO(studentEdited.getId(), studentEdited.getName());
     }
 
     @DeleteMapping("/{id}")

@@ -49,13 +49,6 @@ public class StudentControllerTest {
     }
 
     @Test
-    @DisplayName("WHEN requesting all students THEN HTTP OK is returned")
-    void testGetALlStudentsIsOK() throws Exception {
-        mvc.perform(get("/students"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     @DisplayName("WHEN requesting all students THEN empty list is returned if no students")
     void testGetAllStudentsEmptyList() throws Exception {
         mvc.perform(get("/students"))
@@ -132,8 +125,6 @@ public class StudentControllerTest {
                 .accept(APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("John"))
-                .andExpect(jsonPath("$.age").value(22));
-
+                .andExpect(jsonPath("$.name").value("John"));
     }
 }
