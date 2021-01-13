@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +42,7 @@ public class StudentControllerTest {
             new Student(3, "Jim", 19)
     );
 
+
     private String toJson(Object object) throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(object);
     }
@@ -50,6 +53,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("WHEN requesting all students THEN empty list is returned if no students")
+    @WithMockUser(username = "user", roles = "user")
     void testGetAllStudentsEmptyList() throws Exception {
         mvc.perform(get("/students"))
                 .andExpect(status().isOk())
@@ -59,17 +63,22 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("WHEN requesting all students THEN all student are returned")
+    @WithMockUser(username = "user", roles = "user")
     void testGetAllStudents() throws Exception {
+        List<StudentDTO> initialStudentsDTO = initialStudents.stream()
+                .map(student -> new StudentDTO(student.getId(), student.getName()))
+                .collect(Collectors.toList());
         when(studentService.getAll()).thenReturn(initialStudents);
 
         mvc.perform(get("/students"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON_VALUE))
-                .andExpect(content().json(toJson(initialStudents)));
+                .andExpect(content().json(toJson(initialStudentsDTO)));
     }
 
     @Test
     @DisplayName("WHEN requesting a student by id THEN the student with that id is returned")
+    @WithMockUser(username = "user", roles = "user")
     void testGetOneStudent() throws Exception {
         when(studentService.getOne(1)).thenReturn(ofNullable(initialStudents.get(1)));
 
@@ -81,6 +90,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("WHEN new student is added THEN the student is saved")
+    @WithMockUser(username = "user", roles = "user")
     void testAddStudent() throws Exception {
         when(studentService.addStudent(any(Student.class)))
                 .then(returnFirstArgumentWithId());
@@ -104,6 +114,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("WHEN deleting a student by id THEN the student will be removed")
+    @WithMockUser(username = "user", roles = "user")
     void testDeleteStudent() throws Exception {
         Student student = new Student(1, "John", 20);
 
@@ -116,6 +127,7 @@ public class StudentControllerTest {
 
     @Test
     @DisplayName("WHEN editing a student THEN the student's values are updated")
+    @WithMockUser(username = "user", roles = "user")
     void testEditStudent() throws Exception {
         Student newStudent = new Student(1, "John", 22);
         when(studentService.editStudent(1, newStudent)).thenReturn(newStudent);

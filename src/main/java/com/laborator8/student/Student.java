@@ -1,6 +1,7 @@
 package com.laborator8.student;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table
@@ -61,7 +62,7 @@ public class Student {
 
         if (id != student.id) return false;
         if (age != student.age) return false;
-        return name != null ? name.equals(student.name) : student.name == null;
+        return Objects.equals(name, student.name);
     }
 
     @Override
